@@ -18,6 +18,6 @@ services:
       DISCORD_CLIENT_SECRET: ${DISCORD_CLIENT_SECRET}
       ADMIN_DISCORD_IDS: ${ADMIN_DISCORD_IDS}
     # Внешний доступ только через Nginx; исключает конфликт с другими сервисами хоста.
-    ports: ["127.0.0.1:3000:3000"]
+    ports: ["127.0.0.1:3100:3000"]
 volumes:
   postgres_data:
