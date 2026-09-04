@@ -1,0 +1,11 @@
+.git
+.next
+node_modules
+coverage
+*.log
+.env
+.env.*.local
+!*.example
+ПАМЯТКА_СЕРВЕР.md
+example.jpg
+список заданий на неделю.png
