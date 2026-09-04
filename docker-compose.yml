@@ -6,8 +6,6 @@ services:
       POSTGRES_DB: archeage
       POSTGRES_USER: marathon
       POSTGRES_PASSWORD: marathon
-    # База доступна только с самого сервера; приложению она доступна по сети Compose.
-    ports: ["127.0.0.1:5432:5432"]
     volumes: [postgres_data:/var/lib/postgresql/data]
   app:
     build: .
@@ -19,6 +17,7 @@ services:
       DISCORD_CLIENT_ID: ${DISCORD_CLIENT_ID}
       DISCORD_CLIENT_SECRET: ${DISCORD_CLIENT_SECRET}
       ADMIN_DISCORD_IDS: ${ADMIN_DISCORD_IDS}
-    ports: ["3000:3000"]
+    # Внешний доступ только через Nginx; исключает конфликт с другими сервисами хоста.
+    ports: ["127.0.0.1:3000:3000"]
 volumes:
   postgres_data:
