@@ -6,7 +6,8 @@ services:
       POSTGRES_DB: archeage
       POSTGRES_USER: marathon
       POSTGRES_PASSWORD: marathon
-    ports: ["5432:5432"]
+    # База доступна только с самого сервера; приложению она доступна по сети Compose.
+    ports: ["127.0.0.1:5432:5432"]
     volumes: [postgres_data:/var/lib/postgresql/data]
   app:
     build: .
