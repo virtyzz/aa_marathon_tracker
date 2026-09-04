@@ -9,7 +9,7 @@ export const authOptions: NextAuthOptions = {
   session: { strategy: "jwt" },
   providers: [DiscordProvider({ clientId: process.env.DISCORD_CLIENT_ID!, clientSecret: process.env.DISCORD_CLIENT_SECRET! })],
   callbacks: {
-    async session({ session, user }) { if (session.user) (session.user as typeof session.user & { id: string; discordId?: string | null }).id = user.id; return session; }
+    async session({ session, token }) { if (session.user && token.sub) (session.user as typeof session.user & { id: string; discordId?: string | null }).id = token.sub; return session; }
   },
   events: {
     // Adapter сначала создаёт User, затем связывает OAuth Account. Только здесь User гарантированно существует.
