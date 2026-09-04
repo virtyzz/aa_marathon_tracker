@@ -1,0 +1,131 @@
+generator client {
+ provider = "prisma-client-js"
+}
+datasource db {
+ provider = "postgresql"
+ url = env("DATABASE_URL")
+}
+model User {
+ id String @id @default(cuid())
+ name String?
+ email String? @unique
+ image String?
+ discordId String? @unique
+ accounts Account[]
+ sessions Session[]
+ characters Character[]
+ auditLogs AdminAuditLog[] @relation("AdminActor")
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+}
+model Account {
+ id String @id @default(cuid())
+ userId String
+ type String
+ provider String
+ providerAccountId String
+ refresh_token String? @db.Text
+ access_token String? @db.Text
+ expires_at Int?
+ token_type String?
+ scope String?
+ id_token String? @db.Text
+ session_state String?
+ user User @relation(fields:[userId],references:[id],onDelete:Cascade)
+ @@unique([provider,providerAccountId])
+}
+model Session {
+ id String @id @default(cuid())
+ sessionToken String @unique
+ userId String
+ expires DateTime
+ user User @relation(fields:[userId],references:[id],onDelete:Cascade)
+}
+model VerificationToken {
+ identifier String
+ token String @unique
+ expires DateTime
+ @@unique([identifier,token])
+}
+model Character {
+ id String @id @default(cuid())
+ userId String
+ name String
+ server String?
+ note String?
+ user User @relation(fields:[userId],references:[id],onDelete:Cascade)
+ progresses CharacterTaskProgress[]
+ notes CharacterTaskNote[]
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+ @@unique([userId,name])
+}
+model MarathonWeek {
+ id String @id @default(cuid())
+ title String
+ startsAt DateTime @unique
+ endsAt DateTime
+ isActive Boolean @default(false)
+ weekTasks WeekTask[]
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+}
+model Task {
+ id String @id @default(cuid())
+ title String
+ description String
+ location String?
+ xp Int
+ allowedDays Json?
+ maxCompletions Int @default(7)
+ archived Boolean @default(false)
+ weekTasks WeekTask[]
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+}
+model WeekTask {
+ id String @id @default(cuid())
+ weekId String
+ taskId String
+ titleSnapshot String
+ descriptionSnapshot String
+ locationSnapshot String?
+ xpSnapshot Int
+ allowedDaysSnapshot Json?
+ maxCompletionsSnapshot Int @default(7)
+ week MarathonWeek @relation(fields:[weekId],references:[id],onDelete:Cascade)
+ task Task @relation(fields:[taskId],references:[id])
+ progresses CharacterTaskProgress[]
+ notes CharacterTaskNote[]
+ @@unique([weekId,taskId])
+}
+model CharacterTaskProgress {
+ id String @id @default(cuid())
+ characterId String
+ weekTaskId String
+ dayIndex Int
+ completedAt DateTime @default(now())
+ character Character @relation(fields:[characterId],references:[id],onDelete:Cascade)
+ weekTask WeekTask @relation(fields:[weekTaskId],references:[id],onDelete:Cascade)
+ @@unique([characterId,weekTaskId,dayIndex])
+}
+model CharacterTaskNote {
+ id String @id @default(cuid())
+ characterId String
+ weekTaskId String
+ text String @db.Text
+ updatedAt DateTime @updatedAt
+ character Character @relation(fields:[characterId],references:[id],onDelete:Cascade)
+ weekTask WeekTask @relation(fields:[weekTaskId],references:[id],onDelete:Cascade)
+ @@unique([characterId,weekTaskId])
+}
+model AdminAuditLog {
+ id String @id @default(cuid())
+ actorId String
+ action String
+ entityType String
+ entityId String
+ details Json?
+ createdAt DateTime @default(now())
+ actor User @relation("AdminActor",fields:[actorId],references:[id])
+}

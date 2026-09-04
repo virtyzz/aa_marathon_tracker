@@ -1,0 +1,20 @@
+# Dependencies and Next.js output
+node_modules/
+.next/
+out/
+
+# Local secrets
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Tool caches and local diagnostics
+*.tsbuildinfo
+coverage/
+.turbo/
+*.log
+
+# Supplied visual references, not application assets
+example.jpg
+список заданий на неделю.png
