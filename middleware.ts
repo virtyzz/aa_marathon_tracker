@@ -1,2 +1,3 @@
 export { default } from "next-auth/middleware";
-export const config = { matcher: ["/((?!api/auth|api/health|_next/static|_next/image|favicon.ico).*)"] };
+// Healthcheck must stay available to Docker without a Discord session.
+export const config = { matcher: ["/", "/admin/:path*", "/api/((?!auth|health).*)"] };
