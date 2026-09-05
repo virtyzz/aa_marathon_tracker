@@ -9,7 +9,17 @@ const discordProxy = proxyUrl ? (proxyUrl.startsWith("socks") ? new SocksProxyAg
 const discordProvider = DiscordProvider({ clientId: process.env.DISCORD_CLIENT_ID!, clientSecret: process.env.DISCORD_CLIENT_SECRET! });
 // NextAuth глубоко объединяет входной provider config. Агент нужно назначить после
 // фабрики, иначе экземпляр SocksProxyAgent теряет методы своего прототипа.
-if (discordProxy) discordProvider.httpOptions = { agent: discordProxy };
+if (discordProxy) {
+  // deep merge NextAuth копирует enumerable поля. Связанные методы сохраняют
+  // контекст исходного agent-base instance после этого копирования.
+  const rawAgent = discordProxy as unknown as { addRequest: Function; createSocket: Function; getName: Function };
+  const preservedAgent = Object.assign(discordProxy, {
+    addRequest: rawAgent.addRequest.bind(discordProxy),
+    createSocket: rawAgent.createSocket.bind(discordProxy),
+    getName: rawAgent.getName.bind(discordProxy),
+  });
+  discordProvider.httpOptions = { agent: preservedAgent };
+}
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   // next-auth/middleware выполняется на Edge и не обращается к PostgreSQL.
