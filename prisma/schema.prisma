@@ -15,6 +15,7 @@ model User {
  accounts Account[]
  sessions Session[]
  characters Character[]
+ gameAccounts GameAccount[]
  auditLogs AdminAuditLog[] @relation("AdminActor")
  createdAt DateTime @default(now())
  updatedAt DateTime @updatedAt
@@ -51,15 +52,28 @@ model VerificationToken {
 model Character {
  id String @id @default(cuid())
  userId String
+ gameAccountId String
  name String
  server String?
  note String?
  user User @relation(fields:[userId],references:[id],onDelete:Cascade)
+ gameAccount GameAccount @relation(fields:[gameAccountId],references:[id],onDelete:Cascade)
  progresses CharacterTaskProgress[]
  notes CharacterTaskNote[]
  createdAt DateTime @default(now())
  updatedAt DateTime @updatedAt
- @@unique([userId,name,server])
+ @@unique([gameAccountId,name,server])
+ @@index([gameAccountId])
+}
+model GameAccount {
+ id String @id @default(cuid())
+ userId String
+ name String
+ user User @relation(fields:[userId],references:[id],onDelete:Cascade)
+ characters Character[]
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+ @@unique([userId,name])
 }
 model MarathonWeek {
  id String @id @default(cuid())
