@@ -22,6 +22,7 @@ if (discordProxy) {
 }
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
+  pages: { error: "/auth/error" },
   // next-auth/middleware выполняется на Edge и не обращается к PostgreSQL.
   // JWT позволяет middleware проверить авторизацию без запроса к БД.
   session: { strategy: "jwt" },
