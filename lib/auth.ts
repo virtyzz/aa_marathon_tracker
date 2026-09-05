@@ -2,8 +2,10 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import type { NextAuthOptions } from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
 import { HttpsProxyAgent } from "https-proxy-agent";
+import { SocksProxyAgent } from "socks-proxy-agent";
 import { prisma } from "./prisma";
-const discordProxy = process.env.DISCORD_PROXY_URL ? new HttpsProxyAgent(process.env.DISCORD_PROXY_URL) : undefined;
+const proxyUrl = process.env.DISCORD_PROXY_URL;
+const discordProxy = proxyUrl ? (proxyUrl.startsWith("socks") ? new SocksProxyAgent(proxyUrl) : new HttpsProxyAgent(proxyUrl)) : undefined;
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   // next-auth/middleware выполняется на Edge и не обращается к PostgreSQL.
