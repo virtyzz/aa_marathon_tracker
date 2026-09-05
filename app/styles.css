@@ -50,6 +50,11 @@ main:not(.admin) .char:hover{transform:translateY(-2px);border-color:#4d80b7;box
 main:not(.admin) .char.chosen{box-shadow:inset 0 0 0 1px #347dd1,0 0 20px #3386dc2c}
 main:not(.admin) .char>span{display:flex;flex-direction:column;align-items:flex-start;line-height:1.15;font-weight:700}
 main:not(.admin) .char>span small{margin-top:3px;color:#8295b0;font-size:9px;font-weight:500}
+ .tracker-modal{max-width:390px;text-align:left;box-shadow:0 25px 70px #000b,0 0 45px #448ee436}
+ .tracker-modal h2{margin:14px 0 8px}.tracker-modal p{line-height:1.6;margin-bottom:18px}
+ .tracker-modal label{display:block;margin:11px 0 0;color:#9fb0c7;font-size:10px;font-weight:700}
+ .tracker-modal input{margin-top:5px}.tracker-modal .create{display:block;text-align:center}
+ .modal-mark{width:34px;height:34px;display:grid;place-items:center;border-radius:9px;background:linear-gradient(135deg,#d9b353,#8b6624);color:#12100b;font-family:Unbounded;font-size:18px;box-shadow:0 0 22px #d8ae4c66}
 main:not(.admin) .add{transition:background .18s ease,transform .18s ease,box-shadow .18s ease}
 main:not(.admin) .add:hover{background:#1a3152;transform:translateY(-1px);box-shadow:0 6px 16px #0007}
 main:not(.admin) .week{background:linear-gradient(90deg,#101d2f,#0c1727 48%,#151525);border-color:#29415f;box-shadow:0 10px 26px #0004,inset 0 1px #ffffff0a}
