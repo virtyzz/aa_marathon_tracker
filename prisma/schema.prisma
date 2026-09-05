@@ -67,6 +67,7 @@ model MarathonWeek {
  startsAt DateTime @unique
  endsAt DateTime
  isActive Boolean @default(false)
+ archived Boolean @default(false)
  weekTasks WeekTask[]
  createdAt DateTime @default(now())
  updatedAt DateTime @updatedAt
@@ -94,11 +95,14 @@ model WeekTask {
  xpSnapshot Int
  allowedDaysSnapshot Json?
  maxCompletionsSnapshot Int @default(7)
+ position Int @default(0)
+ published Boolean @default(true)
  week MarathonWeek @relation(fields:[weekId],references:[id],onDelete:Cascade)
  task Task @relation(fields:[taskId],references:[id])
  progresses CharacterTaskProgress[]
  notes CharacterTaskNote[]
  @@unique([weekId,taskId])
+ @@index([weekId,position])
 }
 model CharacterTaskProgress {
  id String @id @default(cuid())

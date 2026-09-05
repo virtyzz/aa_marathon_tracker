@@ -7,9 +7,16 @@ services:
       POSTGRES_USER: marathon
       POSTGRES_PASSWORD: marathon
     volumes: [postgres_data:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
   app:
     build: .
-    depends_on: [db]
+    depends_on:
+      db:
+        condition: service_healthy
     environment:
       DATABASE_URL: postgresql://marathon:marathon@db:5432/archeage?schema=public
       NEXTAUTH_URL: ${NEXTAUTH_URL}
@@ -20,5 +27,10 @@ services:
       ADMIN_DISCORD_IDS: ${ADMIN_DISCORD_IDS}
     # Внешний доступ только через Nginx; исключает конфликт с другими сервисами хоста.
     ports: ["127.0.0.1:3100:3000"]
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
 volumes:
   postgres_data:

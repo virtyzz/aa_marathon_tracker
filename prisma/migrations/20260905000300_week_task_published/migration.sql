@@ -1,0 +1,1 @@
+ALTER TABLE "WeekTask" ADD COLUMN "published" BOOLEAN NOT NULL DEFAULT true;
