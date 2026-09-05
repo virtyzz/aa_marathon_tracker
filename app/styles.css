@@ -30,3 +30,44 @@ main:not(.admin) td{font-size:11px;vertical-align:middle}
 main:not(.admin) td:nth-child(3){color:#9baac0;line-height:1.4}
 main:not(.admin) td:nth-child(n+4):nth-child(-n+10){padding:0;text-align:center}
 @media(max-width:800px){main:not(.admin)>header>b{min-width:0}main:not(.admin)>header>span{display:none}main:not(.admin)>header nav a,main:not(.admin)>header nav button{padding:0 7px;font-size:10px}main:not(.admin) .table-tools input{width:100%}}
+
+/* Visual finish: layered light, elevated surfaces and clear interaction states. */
+body{background:#070c17;background-image:radial-gradient(900px 420px at 48% -100px,#2259903d,transparent 70%),radial-gradient(550px 380px at 100% 40%,#50397918,transparent 75%),linear-gradient(180deg,#091220 0%,#070c17 54%,#060a12 100%)}
+body:after{content:"";position:fixed;inset:0;pointer-events:none;opacity:.34;background-image:linear-gradient(#ffffff05 1px,transparent 1px),linear-gradient(90deg,#ffffff04 1px,transparent 1px);background-size:42px 42px;mask-image:linear-gradient(to bottom,#0008,transparent 70%)}
+main{position:relative;z-index:1}.shell{animation:tracker-enter .5s ease-out both}@keyframes tracker-enter{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+main:not(.admin)>header{position:sticky;top:0;z-index:10;max-width:none;padding-left:max(22px,calc((100vw - 1320px)/2 + 22px));padding-right:max(22px,calc((100vw - 1320px)/2 + 22px));background:#09111de8;backdrop-filter:blur(18px);box-shadow:0 1px #ffffff0b,0 12px 30px #0000002e}
+main:not(.admin)>header>b{color:#f3f6ff;text-shadow:0 0 22px #54a9ff55}
+main:not(.admin)>header nav a:first-child{position:relative;text-shadow:0 0 14px #e8b95566}
+main:not(.admin)>header nav a:first-child:after{content:"";position:absolute;bottom:-1px;left:18px;right:18px;height:2px;border-radius:3px;background:#e2b653;box-shadow:0 0 12px #e2b653cc}
+main:not(.admin)>header>span{padding:7px 10px;border:1px solid #28415d;border-radius:7px;background:#0e1a2bd9;box-shadow:inset 0 1px #ffffff0b}
+main:not(.admin) .shell>h1{font-size:27px;text-shadow:0 3px 22px #07111f,0 0 30px #559ee733}
+main:not(.admin) .shell>h1+p:before{content:"СОБЫТИЕ · МАРАФОН ГЕРОЕВ";display:block;margin-bottom:9px;color:#e0b451;font-size:10px;font-weight:800;letter-spacing:1.15px}
+main:not(.admin) .characters,main:not(.admin) .week,main:not(.admin) .table-card{box-shadow:0 14px 38px #00000026,inset 0 1px #ffffff08}
+main:not(.admin) .characters{background:linear-gradient(135deg,#101d30,#0d1727 65%,#101525);border-color:#263c59}
+main:not(.admin) .characters:before{content:"";width:4px;align-self:stretch;border-radius:4px;background:linear-gradient(#e0b451,#418fdd);box-shadow:0 0 16px #d6a84955}
+main:not(.admin) .char{transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
+main:not(.admin) .char:hover{transform:translateY(-2px);border-color:#4d80b7;box-shadow:0 7px 17px #0007}
+main:not(.admin) .char.chosen{box-shadow:inset 0 0 0 1px #347dd1,0 0 20px #3386dc2c}
+main:not(.admin) .add{transition:background .18s ease,transform .18s ease,box-shadow .18s ease}
+main:not(.admin) .add:hover{background:#1a3152;transform:translateY(-1px);box-shadow:0 6px 16px #0007}
+main:not(.admin) .week{background:linear-gradient(90deg,#101d2f,#0c1727 48%,#151525);border-color:#29415f;box-shadow:0 10px 26px #0004,inset 0 1px #ffffff0a}
+main:not(.admin) .week b{color:#e9c35b;text-shadow:0 0 14px #e1af4366}
+main:not(.admin) .week select{box-shadow:inset 0 1px #ffffff0d,0 5px 12px #0004;transition:border-color .18s ease,box-shadow .18s ease}
+main:not(.admin) .week select:focus,main:not(.admin) .table-tools input:focus,main:not(.admin) .table-tools select:focus{border-color:#4a91d7;box-shadow:0 0 0 3px #3188de20}
+main:not(.admin) .table-card{background:#0b1423;border-color:#263c5a}
+main:not(.admin) .table-tools{background:linear-gradient(90deg,#101e32,#0c1626);box-shadow:inset 0 -1px #ffffff08}
+main:not(.admin) .table-tools:before{content:"ЗАДАНИЯ НЕДЕЛИ";font-family:Unbounded;font-size:11px;color:#eaf0fc;letter-spacing:.2px;margin-right:auto}
+main:not(.admin) .table-tools input{background:#091322cc;box-shadow:inset 0 1px #ffffff0b}
+main:not(.admin) thead{background:linear-gradient(180deg,#132238,#0d1828)}
+main:not(.admin) th{color:#92aacb;border-bottom-color:#2d4668}
+main:not(.admin) tbody tr{transition:background .16s ease,box-shadow .16s ease}
+main:not(.admin) tbody tr:hover{background:linear-gradient(90deg,#142641cc,#101c30cc);box-shadow:inset 3px 0 #54a8e8}
+main:not(.admin) td:first-child{font-weight:700;color:#f0f4fb}
+main:not(.admin) td:nth-child(2){color:#65d1fa;font-weight:800;text-shadow:0 0 12px #40bce66b}
+main:not(.admin) .box{transition:transform .14s ease,background .14s ease,border-color .14s ease,box-shadow .14s ease}
+main:not(.admin) .box:not(:disabled):hover{transform:scale(1.13);border-color:#63b9ec;box-shadow:0 0 12px #3da5dc55}
+main:not(.admin) .box.checked{background:linear-gradient(135deg,#26d6a0,#169d78);box-shadow:0 0 15px #2bce997d,inset 0 1px #ffffff77}
+main:not(.admin) .note{padding:5px 8px;border:1px dashed #405674;border-radius:5px;color:#a8b8d0;transition:all .16s ease}
+main:not(.admin) .note:hover{border-color:#dfb452;background:#281f123d;color:#f0cf75;box-shadow:0 0 12px #e2b65720}
+.toast{border-color:#ea7191;box-shadow:0 12px 35px #0009,0 0 24px #cf517044}
+@media(max-width:800px){main:not(.admin) .shell>h1{font-size:20px}main:not(.admin) .characters:before{display:none}main:not(.admin) .table-tools:before{width:100%;margin-bottom:4px}}
