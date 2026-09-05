@@ -1,9 +1,7 @@
-# syntax=docker/dockerfile:1.7
 FROM node:24-alpine AS build
 WORKDIR /app
 COPY package*.json ./
-# Кэш npm переживает пересборки, если package-lock.json не менялся.
-RUN --mount=type=cache,target=/root/.npm npm ci --prefer-offline
+RUN npm ci --prefer-offline
 COPY . .
 RUN npx prisma generate && npm run build
 FROM node:24-alpine
