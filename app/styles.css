@@ -48,6 +48,8 @@ main:not(.admin) .characters:before{content:"";width:4px;align-self:stretch;bord
 main:not(.admin) .char{transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
 main:not(.admin) .char:hover{transform:translateY(-2px);border-color:#4d80b7;box-shadow:0 7px 17px #0007}
 main:not(.admin) .char.chosen{box-shadow:inset 0 0 0 1px #347dd1,0 0 20px #3386dc2c}
+main:not(.admin) .char>span{display:flex;flex-direction:column;align-items:flex-start;line-height:1.15;font-weight:700}
+main:not(.admin) .char>span small{margin-top:3px;color:#8295b0;font-size:9px;font-weight:500}
 main:not(.admin) .add{transition:background .18s ease,transform .18s ease,box-shadow .18s ease}
 main:not(.admin) .add:hover{background:#1a3152;transform:translateY(-1px);box-shadow:0 6px 16px #0007}
 main:not(.admin) .week{background:linear-gradient(90deg,#101d2f,#0c1727 48%,#151525);border-color:#29415f;box-shadow:0 10px 26px #0004,inset 0 1px #ffffff0a}
