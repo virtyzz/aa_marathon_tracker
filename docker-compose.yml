@@ -16,6 +16,7 @@ services:
       NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
       DISCORD_CLIENT_ID: ${DISCORD_CLIENT_ID}
       DISCORD_CLIENT_SECRET: ${DISCORD_CLIENT_SECRET}
+      DISCORD_PROXY_URL: ${DISCORD_PROXY_URL:-}
       ADMIN_DISCORD_IDS: ${ADMIN_DISCORD_IDS}
     # Внешний доступ только через Nginx; исключает конфликт с другими сервисами хоста.
     ports: ["127.0.0.1:3100:3000"]
