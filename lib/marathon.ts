@@ -1,6 +1,7 @@
 export const WEEK_LIMIT = 100;
 export function totalXp(progresses: { dayIndex:number; weekTask:{xpSnapshot:number} }[]) { return progresses.reduce((total,p)=>total+p.weekTask.xpSnapshot,0); }
-export function canAddXp(current: number, xp: number) { return current + xp <= WEEK_LIMIT; }
+/** Cap only the displayed score; keep every completion and its original XP. */
+export function displayXp(xp: number) { return Math.min(xp, WEEK_LIMIT); }
 export function weekDates(startsAt: Date) { return Array.from({length:7},(_,index)=>new Date(startsAt.getTime()+index*86400000)); }
 /** Game weeks are Thursday 00:00 through Wednesday 23:59:59 in the server timezone. */
 export function currentWeekRange(now = new Date()) {

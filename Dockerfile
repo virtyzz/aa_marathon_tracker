@@ -9,4 +9,4 @@ WORKDIR /app
 ENV NODE_ENV=production
 COPY --from=build /app ./
 EXPOSE 3000
-CMD ["sh", "-c", "npx prisma migrate deploy && npm run db:seed && npm run start"]
+CMD ["sh", "-c", "npx prisma migrate deploy && npm run start"]
