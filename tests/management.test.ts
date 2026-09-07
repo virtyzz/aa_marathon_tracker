@@ -14,6 +14,7 @@ vi.mock("@/lib/game-account", async () => await import("../lib/game-account"));
 vi.mock("@/lib/api-error", async () => await import("../lib/api-error"));
 vi.mock("@/lib/marathon", async () => await import("../lib/marathon"));
 vi.mock("@/lib/task-presentation", async () => await import("../lib/task-presentation"));
+vi.mock("@/lib/character-xp", async () => await import("../lib/character-xp"));
 import { POST as createCharacter } from "../app/api/characters/route";
 import { PATCH as editCharacter, DELETE as deleteCharacter } from "../app/api/characters/[id]/route";
 import { POST as createAccount } from "../app/api/game-accounts/route";
