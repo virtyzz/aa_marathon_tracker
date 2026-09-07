@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useRef, useState } from "react";
+import { MARATHON_LIMIT } from "@/lib/marathon";
 
 type Account = { id: string; name: string };
 type Character = { id: string; name: string; server?: string | null };
@@ -64,7 +65,7 @@ export function TrackerManagement(props: {
           {props.accounts.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
         </select>
       </label>
-      <b>{props.xp}/100 XP</b>
+      <b title="Общий прогресс марафона за все недели">{props.xp}/{MARATHON_LIMIT} XP</b>
       <div className="tracker-actions">
         <button disabled={props.busy} onClick={() => open({ kind: "account", name: "", server: "", accountId: "" })}>+ Аккаунт</button>
         <button disabled={props.busy || !account} onClick={() => account && open({ kind: "account", id: account.id, name: account.name, server: "", accountId: account.id })}>Изменить аккаунт</button>

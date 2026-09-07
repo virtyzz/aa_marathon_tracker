@@ -7,6 +7,7 @@ const mocks = vi.hoisted(() => ({
   gameAccount: { findFirst: vi.fn(), findMany: vi.fn(), create: vi.fn(), update: vi.fn(), delete: vi.fn() },
   marathonWeek: { findFirst: vi.fn(), findMany: vi.fn() },
   characterTaskProgress: { findMany: vi.fn() }, characterTaskNote: { findMany: vi.fn() },
+  characterXpResetExclusion: { findMany: vi.fn() },
 }));
 vi.mock("@/lib/permissions", () => ({ requireUser: mocks.requireUser }));
 vi.mock("@/lib/prisma", () => ({ prisma: mocks }));
@@ -93,6 +94,24 @@ describe("character and account mutations", () => {
 });
 
 describe("current task text and empty accounts", () => {
+  it.each([350, 1250])("counts all marathon weeks up to 1000 while preserving character reset (total %i)", async total => {
+    mocks.gameAccount.findMany.mockResolvedValue([{ id: legacyAccount }]);
+    mocks.character.findMany.mockResolvedValue([{ id: "character" }]);
+    mocks.marathonWeek.findFirst.mockResolvedValue({ id: "week", characterXpResetAt: new Date("2026-09-07T12:00:00Z"), startsAt: new Date("2026-09-03"), endsAt: new Date("2026-09-09"), weekTasks: [] });
+    mocks.marathonWeek.findMany.mockResolvedValue([]);
+    mocks.characterTaskNote.findMany.mockResolvedValue([]);
+    mocks.characterXpResetExclusion.findMany.mockResolvedValue([]);
+    const current = { characterId: "character", weekTaskId: "task", dayIndex: 0, completedAt: new Date("2026-09-06"), weekTask: { xpSnapshot: 80 } };
+    mocks.characterTaskProgress.findMany.mockImplementation(async ({ where }) => where.weekTask ? [current] : [current, { ...current, weekTaskId: "previous-week-task", weekTask: { xpSnapshot: total - 80 } }]);
+    const response = await dashboard(new Request("http://localhost/api/dashboard"));
+    expect(response.status).toBe(200);
+    const data = await response.json();
+    expect(data.stats.xp).toBe(Math.min(total, 1000));
+    expect(data.stats.selectedXp).toBe(0);
+    expect(data.characterXp.character).toBe(0);
+    expect(data.progresses).toHaveLength(1);
+    expect(mocks.characterTaskProgress.findMany).toHaveBeenCalledWith({ where: { character: { gameAccountId: legacyAccount } }, include: { weekTask: { select: { xpSnapshot: true } } } });
+  });
   const item = { id: "week-task", descriptionSnapshot: "Old description", locationSnapshot: "Old NPC", xpSnapshot: 4, task: { description: "", location: null } };
   it("shows cleared current text without changing XP or the snapshot object", () => {
     const result = presentWeekTask(item, { isActive: true, archived: false });

@@ -1,4 +1,6 @@
 export const WEEK_LIMIT = 100;
+export const MARATHON_LIMIT = 1000;
+export function displayMarathonXp(xp: number) { return Math.min(xp, MARATHON_LIMIT); }
 export function totalXp(progresses: { dayIndex:number; weekTask:{xpSnapshot:number} }[]) { return progresses.reduce((total,p)=>total+p.weekTask.xpSnapshot,0); }
 /** Cap only the displayed score; keep every completion and its original XP. */
 export function displayXp(xp: number) { return Math.min(xp, WEEK_LIMIT); }
