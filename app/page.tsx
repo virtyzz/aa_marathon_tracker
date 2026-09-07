@@ -1,11 +1,105 @@
 "use client";
-import{useEffect,useState}from"react";import{signOut}from"next-auth/react";
-const days=["ЧТ","ПТ","СБ","ВС","ПН","ВТ","СР"];type A={id:string;name:string};type C={id:string;name:string;server?:string};type T={id:string;titleSnapshot:string;descriptionSnapshot:string;locationSnapshot?:string;xpSnapshot:number;allowedDaysSnapshot?:number[];maxCompletionsSnapshot:number};type N={weekTaskId:string;text:string};type D={week:{id:string;title:string;dateRange:string;weekTasks:T[]};weeks:{id:string;title:string;startsAt:string;endsAt:string;isActive:boolean}[];gameAccounts:A[];selectedAccountId:string;characters:C[];selectedCharacterId?:string;progresses:{weekTaskId:string;dayIndex:number}[];notes:N[];characterXp:Record<string,number>;stats:{xp:number;selectedXp:number};user:{name?:string;discordId?:string;isAdmin:boolean}};
-export default function Home(){const[d,setD]=useState<D>(),[aid,setAid]=useState(""),[cid,setCid]=useState(""),[wid,setWid]=useState(""),[checks,setChecks]=useState(new Set<string>()),[show,setShow]=useState(false),[name,setName]=useState(""),[server,setServer]=useState(""),[task,setTask]=useState<T>(),[note,setNote]=useState(""),[saving,setSaving]=useState(false),[msg,setMsg]=useState("");
-const load=async(w=wid,c=cid,a=aid)=>{const p=new URLSearchParams();if(w)p.set("weekId",w);if(c)p.set("characterId",c);if(a)p.set("accountId",a);const r=await fetch("/api/dashboard?"+p),x=await r.json();if(!r.ok)return setMsg(x.error??"Ошибка загрузки");setD(x);setAid(x.selectedAccountId);setCid(x.selectedCharacterId??"");setWid(x.week.id);setChecks(new Set(x.progresses.map((v:{weekTaskId:string;dayIndex:number})=>v.weekTaskId+":"+v.dayIndex)))};
-useEffect(()=>{void load()},[]);
-const add=async()=>{try{const r=await fetch("/api/characters",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name,server:server||null,gameAccountId:aid})}),x=await r.json();if(!r.ok)throw Error(x.error);setShow(false);setName("");setServer("");await load(wid,x.id,aid)}catch(e){setMsg(e instanceof Error?e.message:"Не удалось создать персонажа")}};
-const toggle=async(t:T,i:number)=>{if(!cid)return setMsg("Сначала добавьте и выберите персонажа");const k=t.id+":"+i,next=new Set(checks),on=!next.has(k);on?next.add(k):next.delete(k);setChecks(next);const r=await fetch("/api/progress",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({characterId:cid,weekTaskId:t.id,dayIndex:i,completed:on})});if(!r.ok){setChecks(checks);setMsg((await r.json()).error??"Ошибка")}else await load()};
-const editNote=(t:T)=>{if(!cid)return setMsg("Сначала выберите персонажа, чтобы добавить примечание");setTask(t);setNote(d?.notes.find(n=>n.weekTaskId===t.id)?.text??"")};
-const saveNote=async()=>{if(!task||!cid)return;setSaving(true);try{const r=await fetch("/api/notes",{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify({characterId:cid,weekTaskId:task.id,text:note})}),x=await r.json();if(!r.ok)throw Error(x.error);setTask(undefined);await load()}catch(e){setMsg(e instanceof Error?e.message:"Не удалось сохранить примечание")}finally{setSaving(false)}};
-return <main><header><div className="brand"><b>ArcheAge Marathon Tracker</b></div><nav><a className="nav active" href="/">Трекер</a>{d?.user.isAdmin&&<a className="nav" href="/admin">Управление</a>}<button className="nav" onClick={()=>signOut({callbackUrl:"/"})}>Выйти</button></nav><div className="profile"><b>{d?.user.name??"Discord"}</b><small>{d?.user.discordId}</small></div></header><section className="shell"><h1>{d?.week.title}</h1><p>{d?.week.dateRange}</p><section className="account-bar"><div><small>ИГРОВОЙ АККАУНТ</small><select value={aid} onChange={e=>void load(wid,"",e.target.value)}>{d?.gameAccounts.map(a=><option key={a.id} value={a.id}>{a.name}</option>)}</select></div><b>{d?.stats.xp??0}/100 XP</b></section><section className="characters"><b>Персонажи аккаунта:</b><button className="add" onClick={()=>setShow(true)}>+ Добавить персонажа</button>{d?.characters.map(c=><button className={c.id===cid?"char chosen":"char"} key={c.id} onClick={()=>void load(wid,c.id,aid)}><span>{c.name}<small>{c.server??"Сервер не указан"}</small></span><em>{d.characterXp[c.id]??0}/100</em></button>)}</section><section className="week"><select value={wid} onChange={e=>void load(e.target.value,cid,aid)}>{d?.weeks.map(w=><option key={w.id} value={w.id}>{w.isActive?"● Активна · ":""}{w.title}</option>)}</select><span>Выбранный: {d?.stats.selectedXp??0}/100</span></section><section className="table-card"><div className="scroll"><table><thead><tr><th>Задание</th><th>XP</th><th>Описание / локация</th><th>Примечание</th>{days.map(x=><th key={x}>{x}</th>)}<th>За нед.</th></tr></thead><tbody>{d?.week.weekTasks.map(t=>{const n=[...checks].filter(k=>k.startsWith(t.id+":")).length,text=d.notes.find(x=>x.weekTaskId===t.id)?.text;return <tr key={t.id}><td className="quest">{t.titleSnapshot}</td><td>+{t.xpSnapshot}</td><td className="where">{t.descriptionSnapshot}{t.locationSnapshot&&<><br/>{t.locationSnapshot}</>}</td><td><button className="note" title={text||"Добавить примечание"} onClick={()=>editNote(t)}>{text||"Добавить…"}</button></td>{days.map((x,i)=>{const k=t.id+":"+i;return <td className="check-cell" key={x}><button className={checks.has(k)?"box checked":"box"} disabled={!cid||!!t.allowedDaysSnapshot?.length&&!t.allowedDaysSnapshot.includes(i)||(!checks.has(k)&&n>=t.maxCompletionsSnapshot)} onClick={()=>void toggle(t,i)}>{checks.has(k)?"✓":""}</button></td>})}<td><span className="count">{n}/{t.maxCompletionsSnapshot}</span></td></tr>})}</tbody></table></div></section></section>{msg&&<div className="toast">{msg}</div>}{show&&<div className="modal-bg" onMouseDown={()=>setShow(false)}><div className="modal tracker-modal" role="dialog" aria-modal="true" onMouseDown={e=>e.stopPropagation()}><button className="close" onClick={()=>setShow(false)}>×</button><h2>Добавить персонажа</h2><input autoFocus placeholder="Имя персонажа" value={name} onChange={e=>setName(e.target.value)}/><input placeholder="Сервер (необязательно)" value={server} onChange={e=>setServer(e.target.value)}/><button className="create" disabled={!name.trim()} onClick={()=>void add()}>Добавить</button></div></div>}{task&&<div className="modal-bg" onMouseDown={()=>setTask(undefined)}><div className="modal tracker-modal note-modal" role="dialog" aria-modal="true" onMouseDown={e=>e.stopPropagation()}><button className="close" onClick={()=>setTask(undefined)}>×</button><h2>Примечание</h2><p>{task.titleSnapshot}</p><textarea autoFocus maxLength={2000} placeholder="Добавьте заметку к квесту" value={note} onChange={e=>setNote(e.target.value)}/><button className="create" disabled={saving} onClick={()=>void saveNote()}>{saving?"Сохранение…":"Сохранить"}</button></div></div>}</main>}
+import { useEffect, useRef, useState } from "react";
+import { signOut } from "next-auth/react";
+import { TrackerManagement } from "./components/tracker-management";
+
+const days = ["ЧТ", "ПТ", "СБ", "ВС", "ПН", "ВТ", "СР"];
+type Task = { id: string; titleSnapshot: string; descriptionSnapshot: string; locationSnapshot?: string | null; xpSnapshot: number; allowedDaysSnapshot?: number[]; maxCompletionsSnapshot: number };
+type Dashboard = {
+  week: { id: string; title: string; dateRange: string; weekTasks: Task[] };
+  weeks: { id: string; title: string; isActive: boolean }[];
+  gameAccounts: { id: string; name: string }[]; selectedAccountId: string;
+  characters: { id: string; name: string; server?: string | null }[]; selectedCharacterId?: string;
+  progresses: { weekTaskId: string; dayIndex: number }[]; notes: { weekTaskId: string; text: string }[];
+  characterXp: Record<string, number>; stats: { xp: number; selectedXp: number };
+  user: { name?: string; discordId?: string; isAdmin: boolean };
+};
+
+export default function Home() {
+  const [data, setData] = useState<Dashboard>();
+  const [loading, setLoading] = useState(true);
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState("");
+  const [task, setTask] = useState<Task>();
+  const [note, setNote] = useState("");
+  const requestSequence = useRef(0);
+  const mutationPending = useRef(false);
+  const noteDialog = useRef<HTMLDialogElement>(null);
+  const accountId = data?.selectedAccountId ?? "";
+  const characterId = data?.selectedCharacterId ?? "";
+  const weekId = data?.week.id ?? "";
+  const checks = new Set(data?.progresses.map(p => `${p.weekTaskId}:${p.dayIndex}`));
+
+  const load = async (week = weekId, character = characterId, account = accountId) => {
+    const sequence = ++requestSequence.current;
+    setLoading(true);
+    try {
+      const params = new URLSearchParams();
+      if (week) params.set("weekId", week);
+      if (character) params.set("characterId", character);
+      if (account) params.set("accountId", account);
+      const response = await fetch(`/api/dashboard?${params}`);
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload.error ?? "Ошибка загрузки");
+      if (sequence === requestSequence.current) { setData(payload); setMessage(""); }
+    } catch (error) {
+      if (sequence === requestSequence.current) setMessage(error instanceof Error ? error.message : "Ошибка сети. Повторите загрузку.");
+    } finally {
+      if (sequence === requestSequence.current) setLoading(false);
+    }
+  };
+  useEffect(() => { void load(); }, []);
+  useEffect(() => { if (task && !noteDialog.current?.open) noteDialog.current?.showModal(); }, [task]);
+
+  const toggle = async (item: Task, dayIndex: number) => {
+    if (!characterId || mutationPending.current || busy || loading) return;
+    mutationPending.current = true;
+    setBusy(true);
+    try {
+      const response = await fetch("/api/progress", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ characterId, weekTaskId: item.id, dayIndex, completed: !checks.has(`${item.id}:${dayIndex}`) }) });
+      if (!response.ok) throw new Error((await response.json()).error ?? "Не удалось сохранить отметку");
+      await load();
+    } catch (error) { setMessage(error instanceof Error ? error.message : "Ошибка сети. Отметка не сохранена."); }
+    finally { mutationPending.current = false; setBusy(false); }
+  };
+  const saveNote = async () => {
+    if (!task || !characterId || mutationPending.current) return;
+    mutationPending.current = true;
+    setBusy(true);
+    try {
+      const response = await fetch("/api/notes", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ characterId, weekTaskId: task.id, text: note }) });
+      if (!response.ok) throw new Error((await response.json()).error ?? "Не удалось сохранить примечание");
+      setTask(undefined);
+      await load();
+    } catch (error) { setMessage(error instanceof Error ? error.message : "Ошибка сети"); }
+    finally { mutationPending.current = false; setBusy(false); }
+  };
+
+  return <main>
+    <header><div className="brand"><b>ArcheAge Marathon Tracker</b></div><nav><a className="nav active" href="/">Трекер</a>{data?.user.isAdmin && <a className="nav" href="/admin">Управление</a>}<button className="nav" onClick={() => signOut({ callbackUrl: "/" })}>Выйти</button></nav><div className="profile"><b>{data?.user.name ?? "Discord"}</b><small>{data?.user.discordId}</small></div></header>
+    <section className="shell">
+      <h1>{data?.week.title}</h1><p>{data?.week.dateRange}</p>
+      {loading && <p role="status">Загрузка…</p>}
+      <TrackerManagement accounts={data?.gameAccounts ?? []} characters={data?.characters ?? []} accountId={accountId} characterId={characterId} xp={data?.stats.xp ?? 0} characterXp={data?.characterXp ?? {}} busy={busy || loading} onBusyChange={setBusy} onSelect={(account, character) => load(weekId, character, account)} />
+      <section className="week"><select aria-label="Неделя марафона" value={weekId} disabled={busy || loading} onChange={e => void load(e.target.value, characterId, accountId)}>{data?.weeks.map(week => <option key={week.id} value={week.id}>{week.isActive ? "● Активна · " : ""}{week.title}</option>)}</select><span>Выбранный: {data?.stats.selectedXp ?? 0}/100</span></section>
+      <section className="table-card"><div className="scroll"><table><thead><tr><th>Задание</th><th>XP</th><th>Описание / локация</th><th>Примечание</th>{days.map(day => <th key={day}>{day}</th>)}<th>За нед.</th></tr></thead>
+        <tbody>{data?.week.weekTasks.map(item => {
+          const count = data.progresses.filter(p => p.weekTaskId === item.id).length;
+          const text = data.notes.find(n => n.weekTaskId === item.id)?.text;
+          return <tr key={item.id}>
+            <td className="quest">{item.titleSnapshot}</td><td>+{item.xpSnapshot}</td>
+            <td className="where">{item.descriptionSnapshot}{item.locationSnapshot && <>{item.descriptionSnapshot && <br />}{item.locationSnapshot}</>}</td>
+            <td><button className="note" disabled={!characterId || busy || loading} title={text || "Добавить примечание"} onClick={() => { setTask(item); setNote(text ?? ""); }}>{text || "Добавить…"}</button></td>
+            {days.map((day, index) => {
+              const checked = checks.has(`${item.id}:${index}`);
+              return <td className="check-cell" key={day}><button className={checked ? "box checked" : "box"} aria-label={`${item.titleSnapshot}, ${day}`} aria-pressed={checked} disabled={!characterId || busy || loading || !!item.allowedDaysSnapshot?.length && !item.allowedDaysSnapshot.includes(index) || !checked && count >= item.maxCompletionsSnapshot} onClick={() => void toggle(item, index)}>{checked ? "✓" : ""}</button></td>;
+            })}<td><span className="count">{count}/{item.maxCompletionsSnapshot}</span></td>
+          </tr>;
+        })}</tbody></table></div></section>
+    </section>
+    {message && <div className="toast" role="alert">{message}<button disabled={busy || loading} onClick={() => void load()}>Обновить</button><button aria-label="Закрыть сообщение" onClick={() => setMessage("")}>×</button></div>}
+    {task && <dialog ref={noteDialog} className="management-dialog" aria-labelledby="note-title" onCancel={e => { if (busy) e.preventDefault(); else setTask(undefined); }}>
+      <form onSubmit={e => { e.preventDefault(); void saveNote(); }}><h2 id="note-title">Примечание</h2><p>{task.titleSnapshot}</p><label>Текст примечания<textarea autoFocus maxLength={2000} value={note} disabled={busy} onChange={e => setNote(e.target.value)} /></label>{message && <p role="alert">{message}</p>}<div className="tracker-actions dialog-actions"><button type="button" disabled={busy} onClick={() => setTask(undefined)}>Отмена</button><button type="submit" className="primary" disabled={busy}>{busy ? "Сохранение…" : "Сохранить"}</button></div></form>
+    </dialog>}
+  </main>;
+}

@@ -102,3 +102,30 @@ main:not(.admin) .note:hover{border-color:#dfb452;background:#281f123d;color:#f0
 .admin .edit-week-fields{display:grid;gap:12px}.admin .edit-week-fields label{display:grid;gap:5px;color:#9cadc4;font-size:11px}.admin .edit-week-fields input{margin:0}
 .admin .audit-list{display:grid;gap:8px;max-height:320px;overflow:auto}.admin .audit-row{display:flex;justify-content:space-between;gap:14px;padding:9px 0;border-top:1px solid #223149;font-size:11px}.admin .audit-row span{color:#8998ad;text-align:right}
 @media(max-width:850px){.admin .week-row .admin-actions{grid-column:1/-1}.admin .week-row .admin-actions button{width:auto}}
+
+/* Account and character management. */
+.account-bar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:12px}
+.account-select{display:grid;gap:6px;font-size:10px;color:#a7b8cf;min-width:200px}
+.account-select select{padding:9px;border-radius:6px;background:#101a2b;color:#e8edf8;border:1px solid #344560}
+.tracker-actions{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.tracker-actions button{padding:8px 10px;border-radius:5px;background:#14243b;color:#bed0e8;border:1px solid #304a6c}
+.tracker-actions button.danger{background:#211925;color:#f0aebe;border-color:#793e50}
+.tracker-actions button.primary{background:#c9a044;color:#17130c;border-color:#c9a044;font-weight:700}
+.tracker-actions button:disabled,.character-heading button:disabled{opacity:.45;cursor:not-allowed}
+.character-heading{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.character-entry{display:flex;flex-direction:column;gap:7px;padding:8px;border:1px solid #263753;border-radius:7px;min-width:190px}
+.character-entry .char{height:auto;min-height:44px;justify-content:space-between;width:100%}
+.character-entry .char small{display:block;color:#91a0b6;font-size:10px;margin-top:3px}
+.character-entry .tracker-actions button{font-size:10px;flex:1}
+.management-dialog{width:min(440px,calc(100vw - 28px));max-height:calc(100dvh - 32px);overflow:auto;padding:24px;border:1px solid #344665;border-radius:10px;background:#101a2b;color:#e8edf8;box-shadow:0 20px 60px #000a}
+.management-dialog::backdrop{background:#030712b8}
+.management-dialog h2{margin:0 0 18px;font-size:18px}
+.management-dialog p{line-height:1.6}
+.management-dialog label{display:grid;gap:6px;margin:14px 0;color:#a7b8cf}
+.management-dialog input,.management-dialog textarea{width:100%;padding:11px;border:1px solid #344560;border-radius:5px;background:#0b1321;color:#e8edf8;font:inherit}
+.management-dialog textarea{min-height:120px;resize:vertical}
+.management-dialog .dialog-actions{justify-content:flex-end;margin-top:20px}
+.management-dialog .form-error{color:#ffa5b5}
+.tracker-actions button:focus-visible,.management-dialog input:focus-visible,.management-dialog textarea:focus-visible{outline:2px solid #66b7ee;outline-offset:2px}
+.toast button{margin-left:10px;background:transparent;color:inherit}
+@media(max-width:600px){.account-select{width:100%}.account-bar>.tracker-actions{width:100%}.character-entry{width:100%}}
