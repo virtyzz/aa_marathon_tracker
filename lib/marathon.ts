@@ -11,7 +11,10 @@ export function currentWeekRange(now = new Date()) {
  return { startsAt:start, endsAt:end };
 }
 export function formatWeekRange(startsAt: Date, endsAt: Date) {
- return new Intl.DateTimeFormat("ru-RU", { day:"numeric", month:"short", year:"numeric" }).formatRange(startsAt, endsAt).replace(/\.$/, "");
+ return `${formatDayMonth(startsAt)} - ${formatDayMonth(endsAt)}`;
+}
+export function formatDayMonth(date: Date) {
+ return new Intl.DateTimeFormat("ru-RU", { day:"2-digit", month:"2-digit" }).format(date);
 }
 export function allowedOnDay(days: unknown, dayIndex:number) { return !Array.isArray(days) || days.length === 0 || days.includes(dayIndex); }
 export function underTaskLimit(completions:number, maximum:number) { return completions < maximum; }

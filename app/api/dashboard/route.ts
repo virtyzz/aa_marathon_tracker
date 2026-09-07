@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/permissions";
-import { displayXp, formatWeekRange, totalXp } from "@/lib/marathon";
+import { displayXp, formatDayMonth, formatWeekRange, totalXp, weekDates } from "@/lib/marathon";
 import { presentWeekTask } from "@/lib/task-presentation";
 
 export async function GET(request: Request) {
@@ -29,8 +29,8 @@ export async function GET(request: Request) {
     ]);
     const today = Math.max(0, Math.min(6, Math.floor((Date.now() - week.startsAt.getTime()) / 86400000)));
     return NextResponse.json({
-      week: { ...week, weekTasks: week.weekTasks.map(t => presentWeekTask(t, week)), dateRange: formatWeekRange(week.startsAt, week.endsAt) },
-      weeks, gameAccounts, selectedAccountId: account?.id ?? "", characters, selectedCharacterId: characterId,
+      week: { ...week, weekTasks: week.weekTasks.map(t => presentWeekTask(t, week)), dateRange: formatWeekRange(week.startsAt, week.endsAt), dayDates: weekDates(week.startsAt).map(formatDayMonth) },
+      weeks: weeks.map(w => ({ ...w, dateRange: formatWeekRange(w.startsAt, w.endsAt) })), gameAccounts, selectedAccountId: account?.id ?? "", characters, selectedCharacterId: characterId,
       progresses, notes,
       stats: { xp: displayXp(totalXp(all)), selectedXp: displayXp(totalXp(progresses)), todayXp: displayXp(totalXp(all.filter(p => p.dayIndex === today))), completions: all.length },
       characterXp: Object.fromEntries(characters.map(c => [c.id, displayXp(totalXp(all.filter(p => p.characterId === c.id)))])),

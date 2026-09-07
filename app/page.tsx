@@ -6,8 +6,8 @@ import { TrackerManagement } from "./components/tracker-management";
 const days = ["ЧТ", "ПТ", "СБ", "ВС", "ПН", "ВТ", "СР"];
 type Task = { id: string; titleSnapshot: string; descriptionSnapshot: string; locationSnapshot?: string | null; xpSnapshot: number; allowedDaysSnapshot?: number[]; maxCompletionsSnapshot: number };
 type Dashboard = {
-  week: { id: string; title: string; dateRange: string; weekTasks: Task[] };
-  weeks: { id: string; title: string; isActive: boolean }[];
+  week: { id: string; title: string; dateRange: string; dayDates: string[]; weekTasks: Task[] };
+  weeks: { id: string; title: string; dateRange: string; isActive: boolean }[];
   gameAccounts: { id: string; name: string }[]; selectedAccountId: string;
   characters: { id: string; name: string; server?: string | null }[]; selectedCharacterId?: string;
   progresses: { weekTaskId: string; dayIndex: number }[]; notes: { weekTaskId: string; text: string }[];
@@ -81,8 +81,8 @@ export default function Home() {
       <h1>{data?.week.title}</h1><p>{data?.week.dateRange}</p>
       {loading && <p role="status">Загрузка…</p>}
       <TrackerManagement accounts={data?.gameAccounts ?? []} characters={data?.characters ?? []} accountId={accountId} characterId={characterId} xp={data?.stats.xp ?? 0} characterXp={data?.characterXp ?? {}} busy={busy || loading} onBusyChange={setBusy} onSelect={(account, character) => load(weekId, character, account)} />
-      <section className="week"><select aria-label="Неделя марафона" value={weekId} disabled={busy || loading} onChange={e => void load(e.target.value, characterId, accountId)}>{data?.weeks.map(week => <option key={week.id} value={week.id}>{week.isActive ? "● Активна · " : ""}{week.title}</option>)}</select><span>Выбранный: {data?.stats.selectedXp ?? 0}/100</span></section>
-      <section className="table-card"><div className="scroll"><table><thead><tr><th>Задание</th><th>XP</th><th>Описание / локация</th><th>Примечание</th>{days.map(day => <th key={day}>{day}</th>)}<th>За нед.</th></tr></thead>
+      <section className="week"><select aria-label="Неделя марафона" value={weekId} disabled={busy || loading} onChange={e => void load(e.target.value, characterId, accountId)}>{data?.weeks.map(week => <option key={week.id} value={week.id}>{week.isActive ? "● Активна · " : ""}{week.title} · {week.dateRange}</option>)}</select><span>Выбранный: {data?.stats.selectedXp ?? 0}/100</span></section>
+      <section className="table-card"><div className="scroll"><table><thead><tr><th>Задание</th><th>XP</th><th>Описание / локация</th><th>Примечание</th>{days.map((day, index) => <th key={day}>{day}<small>{data?.week.dayDates[index]}</small></th>)}<th>За нед.</th></tr></thead>
         <tbody>{data?.week.weekTasks.map(item => {
           const count = data.progresses.filter(p => p.weekTaskId === item.id).length;
           const text = data.notes.find(n => n.weekTaskId === item.id)?.text;
